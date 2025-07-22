@@ -1,0 +1,72 @@
+# Minimal Update Manifest - Only implemented features
+version: "1.2.3"
+release_date: "2025-01-20"
+description: "Bug fixes and new features"
+
+# File handling rules
+files:
+  # Configuration files - intelligent merging
+  "config.toml":
+    action: "merge_toml"
+    merge_strategy: "preserve_user"
+
+  "config/*.toml":
+    action: "merge_toml" 
+    merge_strategy: "preserve_user"
+
+  "settings.json":
+    action: "merge_json"
+    merge_strategy: "preserve_user"
+
+  # Application code - always replace
+  "src/**/*.py":
+    action: "replace"
+
+  "*.py":
+    action: "replace"
+
+  "requirements.txt":
+    action: "replace"
+
+  # Templates - backup then replace
+  "templates/**/*":
+    action: "backup_replace"
+
+  # Environment files - never touch
+  ".env":
+    action: "skip"
+
+  "secrets/*":
+    action: "skip"
+
+# Directory preservation
+directories:
+  # User data - always preserve
+  "data":
+    preserve: true
+
+  "images":
+    preserve: true
+
+  "uploads":
+    preserve: true
+
+  # Cache - can be cleared
+  "cache":
+    preserve: false
+
+  "tmp":
+    preserve: false
+
+# Update hooks
+hooks:
+  pre_update:
+    - "systemctl stop myapp.service"
+
+  post_update:
+    - "pip install -r requirements.txt"
+    - "systemctl start myapp.service"
+
+  rollback:
+    - "systemctl stop myapp.service"
+    - "systemctl start myapp.service"
