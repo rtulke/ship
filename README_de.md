@@ -1,10 +1,10 @@
-# Ship ein Application Updater
+# Ship ein Anwendungs-Updater
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
-Ein robustes Python-basiertes Update-System für Anwendungen mit Unterstützung für Git, HTTP/HTTPS und SFTP-Quellen. Entwickelt für unbeaufsichtigten Betrieb auf Remote-Systemen mit intelligenter Konfigurationsverwaltung und automatischen Rollback-Funktionen.
+Ein Python-basiertes Update-System für Anwendungen mit Unterstützung für Git, HTTP/HTTPS und SFTP-Quellen. Entwickelt für unbeaufsichtigten Betrieb auf Remote-Systemen mit intelligenter Konfigurationsverwaltung und automatischen Rollback-Funktionen.
 
 ## 🚀 Hauptfeatures
 
