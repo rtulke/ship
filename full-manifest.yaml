@@ -1,0 +1,268 @@
+# Update Manifest - Defines how files should be handled during updates
+# This file should be included in your application releases
+
+version: "1.2.3"
+release_date: "2025-01-20"
+description: "Bug fixes and new features"
+
+# File-specific rules
+files:
+  # Configuration files - intelligent merging
+  "config.toml":
+    action: "merge_toml"
+    merge_strategy: "preserve_user"  # Keep user values, add new keys
+    backup: true
+
+  "config/*.toml":
+    action: "merge_toml"
+    merge_strategy: "preserve_user"
+    backup: true
+
+  "settings.json":
+    action: "merge_json"
+    merge_strategy: "preserve_user"
+    backup: true
+
+  # Application code - always replace
+  "src/**/*.py":
+    action: "replace"
+
+  "*.py":
+    action: "replace"
+
+  "requirements.txt":
+    action: "replace"
+
+  # Static assets - replace but backup first
+  "templates/**/*":
+    action: "backup_replace"
+
+  "static/**/*":
+    action: "replace"
+
+  # Sensitive files - never touch
+  ".env":
+    action: "skip"
+
+  "secrets/*":
+    action: "skip"
+
+  # Database migrations - special handling
+  "migrations/*.sql":
+    action: "backup_replace"
+    post_process: "run_migration"
+
+  # Documentation
+  "README.md":
+    action: "replace"
+
+  "docs/**/*":
+    action: "replace"
+
+# Directory preservation rules
+directories:
+  # User data - always preserve
+  "data":
+    preserve: true
+    description: "User data directory"
+
+  "images":
+    preserve: true
+    description: "User uploaded images"
+
+  "uploads":
+    preserve: true
+    description: "User uploads"
+
+  # Logs - preserve but allow cleanup
+  "logs":
+    preserve: true
+    cleanup_old: true
+    keep_days: 30
+
+  # Cache - can be cleared
+  "cache":
+    preserve: false
+    description: "Application cache"
+
+  # Temporary files
+  "tmp":
+    preserve: false
+
+# Hooks to run at different stages
+hooks:
+  # Before update starts
+  pre_update:
+    - "systemctl stop myapp.service"
+    - "python3 scripts/pre_update_check.py"
+
+  # After successful update
+  post_update:
+    - "python3 scripts/migrate.py"
+    - "python3 scripts/update_permissions.py"
+    - "systemctl start myapp.service"
+    - "python3 scripts/health_check.py"
+
+  # If update fails
+  rollback:
+    - "systemctl stop myapp.service"
+    - "python3 scripts/cleanup_failed_update.py"
+    - "systemctl start myapp.service"
+
+# Update requirements and checks
+requirements:
+  min_python_version: "3.8"
+  min_disk_space_mb: 100
+  required_commands:
+    - "systemctl"
+    - "python3"
+  
+  # Services that must be running
+  required_services:
+    - "postgresql"
+
+  # Environment checks
+  environment_checks:
+    - name: "database_connectivity" 
+      command: "python3 scripts/check_db.py"
+    - name: "api_availability"
+      command: "curl -f http://localhost:8000/health"
+
+# Rollback strategy
+rollback:
+  strategy: "full_backup"  # full_backup, git_revert, or custom
+  keep_backups: 5
+  
+  # Automatic rollback triggers
+  auto_rollback_on:
+    - "health_check_fail"
+    - "service_start_fail"
+    - "critical_error"
+
+  # Custom rollback command
+  custom_rollback_command: "python3 scripts/custom_rollback.py"
+
+# Notification settings
+notifications:
+  on_success:
+    - type: "log"
+      message: "Update to version {version} completed successfully"
+    
+    - type: "webhook"
+      url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+      message: "✅ MyApp updated to {version}"
+
+  on_failure:
+    - type: "log"
+      level: "error"
+      message: "Update to version {version} failed: {error}"
+    
+    - type: "webhook" 
+      url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+      message: "❌ MyApp update failed: {error}"
+
+# Security settings
+security:
+  verify_checksums: true
+  allowed_file_types: 
+    - ".py"
+    - ".toml"
+    - ".json"
+    - ".sql"
+    - ".md"
+    - ".txt"
+    - ".yaml"
+    - ".yml"
+  
+  # Files that require elevated permissions
+  privileged_files:
+    - "scripts/system_config.py"
+  
+  # Maximum file sizes (in MB)
+  max_file_size_mb: 50
+
+# Advanced merge strategies for specific config sections
+merge_strategies:
+  config.toml:
+    # Section-specific merge rules
+    sections:
+      database:
+        strategy: "preserve_user"  # Never overwrite DB settings
+        
+      logging:
+        strategy: "update_only"    # Add new log levels, keep existing
+        
+      features:
+        strategy: "replace"        # Always use new feature flags
+        
+      api:
+        strategy: "merge_smart"    # Intelligent merging
+        preserve_keys:
+          - "api_key"
+          - "secret_key" 
+          - "custom_endpoints"
+
+# Conditional updates based on current system state  
+conditionals:
+  # Only run if certain conditions are met
+  - condition: "file_exists('/opt/myapp/.maintenance_mode')"
+    action: "skip_update"
+    message: "System in maintenance mode, skipping update"
+
+  - condition: "service_running('myapp.service')"
+    action: "warn"
+    message: "Service is running, will be restarted"
+
+  # Version-specific conditions
+  - condition: "current_version < '1.0.0'"
+    action: "require_manual_intervention" 
+    message: "Major version upgrade requires manual steps"
+    manual_steps:
+      - "Backup database manually"
+      - "Review breaking changes in CHANGELOG.md"
+      - "Update environment variables"
+
+# Migration scripts for version upgrades
+migrations:
+  "1.1.0":
+    - "python3 scripts/migrate_config_format.py"
+    - "python3 scripts/update_database_schema.py"
+  
+  "1.2.0":
+    - "python3 scripts/migrate_user_data.py"
+    - "python3 scripts/rebuild_search_index.py"
+
+# Cleanup tasks after successful update
+cleanup:
+  remove_files:
+    - "*.pyc"
+    - "__pycache__"
+    - "old_migrations/*.sql"
+  
+  remove_directories:
+    - "legacy_modules"
+    - "deprecated_templates"
+
+  commands:
+    - "find /opt/myapp -name '*.pyc' -delete"
+    - "find /opt/myapp -name '__pycache__' -type d -exec rm -rf {} +"
+
+# Testing after update
+post_update_tests:
+  - name: "Import test"
+    command: "python3 -c 'import myapp; print(\"Import OK\")'"
+    timeout: 30
+
+  - name: "Database connectivity"
+    command: "python3 scripts/test_db_connection.py"
+    timeout: 60
+
+  - name: "API endpoints"
+    command: "python3 scripts/test_api.py"
+    timeout: 120
+
+  - name: "Service health"
+    command: "curl -f http://localhost:8000/health"
+    timeout: 30
+    retry_count: 3
+    retry_delay: 5
