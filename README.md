@@ -17,7 +17,7 @@ A Python-based application update system supporting Git, HTTP/HTTPS, and SFTP so
 - **Automatic Rollbacks**: On failed health checks or service start problems
 - **Security-First**: Checksum verification, file type validation, minimal permissions
 - **Comprehensive Testing**: Post-update health checks with retry logic
-- **Multi-Channel Notifications**: Slack, webhooks, email, logs
+- **Multi-Channel Notifications**: Slack, webhooks, logs
 - **Directory Protection**: User data remains untouched (`data/`, `images/`, `uploads/`)
 - **Migration Support**: Version-specific upgrade scripts
 
