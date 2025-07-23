@@ -1,0 +1,29 @@
+[Unit]
+Description=Ship Application Updater Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ship
+Group=ship
+Environment=PYTHONPATH=/opt/ship
+WorkingDirectory=/opt/ship
+ExecStart=/opt/ship/venv/bin/python /opt/ship/ship.py --config /etc/ship/ship.toml
+StandardOutput=journal
+StandardError=journal
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/ship /var/log /opt/myapp
+ProtectHome=true
+RemainAfterExit=no
+
+# Security hardening
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged @reboot @swap @raw-io
+
+[Install]
+WantedBy=multi-user.target
