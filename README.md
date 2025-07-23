@@ -18,7 +18,7 @@ A Python-based application update system supporting Git, HTTP/HTTPS, and SFTP so
 - **Security-First**: Checksum verification, file type validation, minimal permissions
 - **Comprehensive Testing**: Post-update health checks with retry logic
 - **Multi-Channel Notifications**: Slack, webhooks, logs
-- **Directory Protection**: User data remains untouched (`data/`, `images/`, `uploads/`)
+- **Directory Protection**: User data remains untouched (e.g. `data/`, `images/`, `uploads/`)
 - **Migration Support**: Version-specific upgrade scripts
 
 ## 📋 Table of Contents
