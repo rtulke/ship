@@ -8,7 +8,7 @@ ship - ships your code to next level a python updater for your application
 
 A Python-based application update system supporting Git, HTTP/HTTPS, and SFTP sources. Designed for unattended operation on remote systems with intelligent configuration management and automatic rollback capabilities.
 
-[ship](logo/ship_200x200.png)ship_200x200.png
+![ship](logo/ship_200x200.png)
 
 ## 🚀 Key Features
 
