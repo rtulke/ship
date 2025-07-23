@@ -6,9 +6,12 @@ ship - ships your code to next level a python updater for your application
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
+<div align="right">
+  <img src="logo/ship_200x200.png" alt="ship" width="200" />
+</div>
+
 A Python-based application update system supporting Git, HTTP/HTTPS, and SFTP sources. Designed for unattended operation on remote systems with intelligent configuration management and automatic rollback capabilities.
 
-![ship](logo/ship_200x200.png)
 
 ## 🚀 Key Features
 
