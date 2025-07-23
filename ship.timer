@@ -1,0 +1,14 @@
+[Unit]
+Description=Run Ship Application Updater Daily
+Requires=ship.service
+
+[Timer]
+# Run daily at 6:00 AM
+OnCalendar=*-*-* 06:00:00
+# Run on boot if missed (e.g., system was down)
+Persistent=true
+# Add randomized delay up to 30 minutes to prevent thundering herd
+RandomizedDelaySec=1800
+
+[Install]
+WantedBy=timers.target
